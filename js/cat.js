@@ -1,5 +1,5 @@
-$(function () {
     var data = {
+        cat_id: 0,
         cat1: {
             id: 1,
             image: "images/cat.jpg",
@@ -33,13 +33,24 @@ $(function () {
     };
 
     var octopus = {
-        getCat: function (cat) {
-            catView.init(cat);
+        getCat: function () {
+            catView.init();
         },
 
-        addClick: function (cat) {
-            ++cat.click;
-            catView.render(cat);
+        setCurrent: function (currentCat_id) {
+            data.cat_id = currentCat_id;
+
+        },
+
+        getCurrent: function () {
+            return data[Object.keys(data)[data.cat_id]];
+        },
+
+        addClick: function () {
+            var currentCat = this.getCurrent();
+            ++currentCat.click;
+            catView.render();
+
         },
 
         init: function () {
@@ -50,34 +61,41 @@ $(function () {
     var listView = {
         init: function () {
             Object.keys(data).forEach((item) => {
-                var clickCat = $('#' + data[item].id);
-                clickCat.click(async function () {
-                    octopus.getCat(data[item]);
-                })
+                if (data[item]) {
+                    var clickCat = $('#' + data[item].id);
+                    clickCat.click(async function () {
+                        octopus.setCurrent(data[item].id);
+                        octopus.getCat();
+                    })
+                }
 
             });
         }
     };
 
     var catView = {
-        init: function (cat) {
+        init: function () {
+            var currentCat = octopus.getCurrent();
             this.name = document.getElementById("title");
             this.count = document.getElementById("count");
             this.heart = document.getElementById("heart");
             this.img = document.getElementById("cat_img");
-            $('#cat_img').click(function () {
-                octopus.addClick(cat);
+            this.img.innerHTML = '';
+            var image = document.createElement('IMG');
+            image.setAttribute('id', 'img_id');
+            image.src = currentCat.image;
+            this.img.appendChild(image);
+            $('#img_id').click(function () {
+                octopus.addClick();
             });
             this.heart.innerHTML = '&#10084';
-            this.render(cat);
+            this.render();
         },
-        render: function (cat) {
-            this.name.innerHTML = cat.title + " Cat";
-            this.count.innerHTML = cat.click;
-            this.img.src = cat.image;
+        render: function () {
+            var currentCat = octopus.getCurrent();
+            this.name.innerHTML = currentCat.title + " Cat";
+            this.count.innerHTML = currentCat.click;
         }
     };
 
     octopus.init();
-}());
-
