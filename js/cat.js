@@ -63,7 +63,7 @@
             Object.keys(data).forEach((item) => {
                 if (data[item]) {
                     var clickCat = $('#' + data[item].id);
-                    clickCat.click(async function () {
+                    clickCat.click( function () {
                         octopus.setCurrent(data[item].id);
                         octopus.getCat();
                     })
